@@ -8,14 +8,6 @@ fun main(args: Array<String>) {
     val functions = require("firebase-functions")
     val admin = require("firebase-admin")
     admin.initializeApp(functions.config().firebase)
-
-//    exports.saveString = functions.https.onRequest { req, res ->
-//        val text = req.query.text
-//
-//        admin.database().ref("/testMessage").push(text).then {
-//            res.status(200).send("Saved: $text")
-//        }
-//    }
     exports.findGame = functions.https.onRequest { req, res ->
         val id = req.query.id
         console.log(req.query.id)
@@ -29,18 +21,26 @@ fun main(args: Array<String>) {
                 if(count < 5){
                     ref.child(key).update(EmptyLobbiesData(count + 1))
                     admin.database().ref("/develop/lobbies/public/${key}/members/$id").set(true)
+                } else {
+                    ref.set(null)
+                    createLobby(admin, id)
                 }
                 res.status(200).send(snapshot.`val`())
             } else {
-               val push = ref.push()
-                val lobbiesRef = admin.database().ref("/develop/lobbies/public/${push.key}")
-                push.set(EmptyLobbiesData())
-                lobbiesRef.set(PublicLobby("Открытое лобби", id))
-                res.status(200).send(push.key)
+                createLobby(admin, id)
             }
         })
     }
 }
+
+fun createLobby(admin: dynamic, id: String): String{
+    val push = admin.database().ref("/develop/emptyLobbies").push()
+    val lobbiesRef = admin.database().ref("/develop/lobbies/public/${push.key}")
+    push.set(EmptyLobbiesData())
+    lobbiesRef.set(PublicLobby("Открытое лобби", id))
+    return push.key
+}
+
 
 class EmptyLobbiesData(val membersCount: Int = 1)
 

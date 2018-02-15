@@ -12,14 +12,14 @@
           closure$ref.child(key).update(new EmptyLobbiesData(count + 1));
           closure$admin.database().ref('/develop/lobbies/public/' + key + '/members/' + closure$id).set(true);
         }
+         else {
+          closure$ref.set(null);
+          createLobby(closure$admin, closure$id);
+        }
         return closure$res.status(200).send(snapshot.val());
       }
        else {
-        var push = closure$ref.push();
-        var lobbiesRef = closure$admin.database().ref('/develop/lobbies/public/' + push.key);
-        push.set(new EmptyLobbiesData());
-        lobbiesRef.set(new PublicLobby('\u041E\u0442\u043A\u0440\u044B\u0442\u043E\u0435 \u043B\u043E\u0431\u0431\u0438', closure$id));
-        return closure$res.status(200).send(push.key);
+        return createLobby(closure$admin, closure$id);
       }
     };
   }
@@ -36,6 +36,13 @@
     var admin = require('firebase-admin');
     admin.initializeApp(functions.config().firebase);
     exports.findGame = functions.https.onRequest(main$lambda(admin));
+  }
+  function createLobby(admin, id) {
+    var push = admin.database().ref('/develop/emptyLobbies').push();
+    var lobbiesRef = admin.database().ref('/develop/lobbies/public/' + push.key);
+    push.set(new EmptyLobbiesData());
+    lobbiesRef.set(new PublicLobby('\u041E\u0442\u043A\u0440\u044B\u0442\u043E\u0435 \u043B\u043E\u0431\u0431\u0438', id));
+    return push.key;
   }
   function EmptyLobbiesData(membersCount) {
     if (membersCount === void 0)
@@ -64,6 +71,7 @@
     interfaces: []
   };
   _.main_kand9s$ = main;
+  _.createLobby_hwpqgh$ = createLobby;
   _.EmptyLobbiesData = EmptyLobbiesData;
   _.PublicLobby = PublicLobby;
   main([]);
