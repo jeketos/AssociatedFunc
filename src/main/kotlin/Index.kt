@@ -1,6 +1,3 @@
-import kotlin.js.Json
-import kotlin.js.json
-
 external fun require(module: String): dynamic
 external val exports: dynamic
 
@@ -14,40 +11,43 @@ fun main(args: Array<String>) {
         val ref = admin.database().ref("/develop/emptyLobbies")
         ref.once("value", { snapshot ->
             val data = snapshot.`val`()
-            console.log(data)
-            if(data !== null){
-                val key = js("Object").keys(data)[0]
-                val count = data[key].membersCount
-                if(count < 5){
-                    ref.child(key).update(EmptyLobbiesData(count + 1))
-                    admin.database().ref("/develop/lobbies/public/${key}/members/$id").set(true)
+            res.status(200).send(
+                if(data !== null){
+                    val key = js("Object").keys(data)[0]
+                    val count = data[key].membersCount
+                    if(count < 5){
+                        ref.child(key).update(EmptyLobbiesData(count + 1))
+                        admin.database().ref("/develop/lobbies/public/${key}/members/$id").set(Member(false))
+                        ValueHolder<String>(key)
+                    } else {
+                        ref.set(null)
+                        createLobby(admin, id)
+                    }
                 } else {
-                    ref.set(null)
-                    createLobby(admin, id)
-                }
-                res.status(200).send(snapshot.`val`())
-            } else {
-                createLobby(admin, id)
-            }
+                    createLobby(admin, id, true)
+                })
         })
     }
 }
 
-fun createLobby(admin: dynamic, id: String): String{
+fun createLobby(admin: dynamic, id: dynamic, drawer: Boolean = false): ValueHolder<String> {
     val push = admin.database().ref("/develop/emptyLobbies").push()
     val lobbiesRef = admin.database().ref("/develop/lobbies/public/${push.key}")
     push.set(EmptyLobbiesData())
-    lobbiesRef.set(PublicLobby("Открытое лобби", id))
-    return push.key
+    lobbiesRef.set(PublicLobby("Открытое лобби", id, drawer))
+    return ValueHolder(push.key)
 }
 
 
 class EmptyLobbiesData(val membersCount: Int = 1)
+class  ValueHolder<out T>(val value: T)
 
-class PublicLobby(val name: String, memberToAdd: String){
+class PublicLobby(val name: String, memberToAdd: dynamic, drawer: Boolean = false){
     val members: dynamic = object {}
     init {
-        members[memberToAdd] = true
+        members[memberToAdd] = Member(drawer)
     }
 
 }
+
+class Member(val drawer: Boolean)
