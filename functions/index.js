@@ -1,6 +1,9 @@
 (function (_, Kotlin) {
   'use strict';
   var Kind_CLASS = Kotlin.Kind.CLASS;
+  var throwCCE = Kotlin.throwCCE;
+  var toInt = Kotlin.kotlin.text.toInt_pdl1vz$;
+  var Exception = Kotlin.kotlin.Exception;
   function main$lambda$lambda(closure$res, closure$ref, closure$admin, closure$id) {
     return function (snapshot) {
       var tmp$, tmp$_0;
@@ -38,6 +41,7 @@
     var admin = require('firebase-admin');
     admin.initializeApp(functions.config().firebase);
     exports.findGame = functions.https.onRequest(main$lambda(admin));
+    getWords(admin, functions);
   }
   function createLobby(admin, id, drawer) {
     if (drawer === void 0)
@@ -92,12 +96,56 @@
     simpleName: 'Member',
     interfaces: []
   };
+  function getWords$lambda$lambda$lambda(snapshot) {
+    return snapshot.val();
+  }
+  function getWords$lambda$lambda(closure$res) {
+    return function (it) {
+      return closure$res.status(200).send(it);
+    };
+  }
+  var Array_0 = Array;
+  function getWords$lambda(closure$admin) {
+    return function (req, res) {
+      var tmp$, tmp$_0;
+      var defaultCount = 3;
+      console.log(req.query.count);
+      try {
+        tmp$_0 = toInt(typeof (tmp$ = req.query.count) === 'string' ? tmp$ : throwCCE());
+      }
+       catch (e) {
+        if (Kotlin.isType(e, Exception)) {
+          tmp$_0 = defaultCount;
+        }
+         else
+          throw e;
+      }
+      var wordsCount = tmp$_0;
+      var ref = closure$admin.database().ref('/develop/words');
+      var array = Array_0(wordsCount);
+      var tmp$_1;
+      tmp$_1 = array.length - 1 | 0;
+      for (var i = 0; i <= tmp$_1; i++) {
+        var tmp$_2;
+        array[i] = Kotlin.isType(tmp$_2 = ref.child(getRandom(1002)).once('value', getWords$lambda$lambda$lambda), Promise) ? tmp$_2 : throwCCE();
+      }
+      return Promise.all(array).then(getWords$lambda$lambda(res));
+    };
+  }
+  function getWords(admin, functions) {
+    exports.getWords = functions.https.onRequest(getWords$lambda(admin));
+  }
+  function getRandom(max) {
+    return Math.floor(Math.random() * (max - 0 + 1 | 0) + 0);
+  }
   _.main_kand9s$ = main;
   _.createLobby_u5mjnp$ = createLobby;
   _.EmptyLobbiesData = EmptyLobbiesData;
   _.ValueHolder = ValueHolder;
   _.PublicLobby = PublicLobby;
   _.Member = Member;
+  _.getWords_wn2jw4$ = getWords;
+  _.getRandom_za3lpa$ = getRandom;
   main([]);
   Kotlin.defineModule('index', _);
   return _;

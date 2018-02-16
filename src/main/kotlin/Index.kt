@@ -28,7 +28,9 @@ fun main(args: Array<String>) {
                 })
         })
     }
+    getWords(admin, functions)
 }
+
 
 fun createLobby(admin: dynamic, id: dynamic, drawer: Boolean = false): ValueHolder<String> {
     val push = admin.database().ref("/develop/emptyLobbies").push()
