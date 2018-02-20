@@ -19,7 +19,7 @@
         }
          else {
           closure$ref.set(null);
-          tmp$ = createLobby(closure$admin, closure$id);
+          tmp$ = createLobby(closure$admin, closure$id, true);
         }
       }
        else {

@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
                         ValueHolder<String>(key)
                     } else {
                         ref.set(null)
-                        createLobby(admin, id)
+                        createLobby(admin, id,true)
                     }
                 } else {
                     createLobby(admin, id, true)
