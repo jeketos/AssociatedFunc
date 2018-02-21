@@ -29,6 +29,8 @@ fun main(args: Array<String>) {
         })
     }
     getWords(admin, functions)
+
+    observeChats(admin, functions)
 }
 
 

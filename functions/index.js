@@ -42,6 +42,7 @@
     admin.initializeApp(functions.config().firebase);
     exports.findGame = functions.https.onRequest(main$lambda(admin));
     getWords(admin, functions);
+    observeChats(admin, functions);
   }
   function createLobby(admin, id, drawer) {
     if (drawer === void 0)
@@ -96,6 +97,13 @@
     simpleName: 'Member',
     interfaces: []
   };
+  function observeChats$lambda(event) {
+    console.log('chatId = ' + event.params.chatId + '; messageId = ' + event.params.messageId);
+    return event.data.ref.child('ertert');
+  }
+  function observeChats(admin, functions) {
+    exports.observeChats = functions.database.ref('/develop/chats/{chatId}/{messageId}').onCreate(observeChats$lambda);
+  }
   function getWords$lambda$lambda$lambda(snapshot) {
     return snapshot.val();
   }
@@ -144,6 +152,7 @@
   _.ValueHolder = ValueHolder;
   _.PublicLobby = PublicLobby;
   _.Member = Member;
+  _.observeChats_wn2jw4$ = observeChats;
   _.getWords_wn2jw4$ = getWords;
   _.getRandom_za3lpa$ = getRandom;
   main([]);
