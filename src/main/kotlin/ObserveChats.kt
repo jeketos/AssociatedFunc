@@ -1,9 +1,16 @@
 
 fun observeChats(admin: dynamic, functions: dynamic){
     exports.observeChats = functions.database
-            .ref("/develop/chats/{chatId}/{messageId}")
+            .ref("/develop/chats/{lobbyId}/{messageId}")
             .onCreate{ event ->
-                console.log("chatId = ${event.params.chatId}; messageId = ${event.params.messageId}")
+                val lobbyId = event.params.lobbyId
+                console.log("lobbyId = ${lobbyId}; messageId = ${event.params.messageId}")
+                admin.database()
+                        .ref("/develop/selectedWords/$lobbyId/selectedWord")
+                        .once("value", { snapshot ->
+                            val data = snapshot.`val`()
+                            data
+                        })
                 return@onCreate event.data.ref.child("nice")
             }
 }
