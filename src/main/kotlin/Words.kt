@@ -11,13 +11,7 @@ fun getWords(admin: dynamic, functions: dynamic) {
         } catch (e: Exception){
             defaultCount
         }
-//                if(req.query.count === "undefined") {
-//                defaultCount
-//            } else {
-//
-//            }
-
-        val ref = admin.database().ref("/develop/words")
+        val ref = admin.database().ref("/words")
         Promise.all(Array(wordsCount, {
             ref.child(getRandom(1002)).once("value", { snapshot  ->
                 snapshot.`val`()
